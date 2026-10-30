@@ -32,8 +32,14 @@ const Forge=window.Forge={
   },
   say(text){
     try{const s=window.speechSynthesis;if(!s)return;s.cancel();
-      const u=new SpeechSynthesisUtterance(text);u.lang='en-US';u.rate=.85;s.speak(u)}catch(e){}
+      const u=new SpeechSynthesisUtterance(text);u.lang='en-US';u.rate=.85;
+      Forge.deafUntil=performance.now()+1200+text.length*120;          // estimate, until we hear "end"
+      u.onend=u.onerror=()=>{Forge.deafUntil=performance.now()+500};   // plus a little room echo
+      s.speak(u)}catch(e){}
   },
+  deafUntil:0,
+  /* true while the game itself is talking: the mic games ignore the microphone then */
+  deaf(){return performance.now()<Forge.deafUntil||!!(window.speechSynthesis&&speechSynthesis.speaking)},
   /* Microphone → AnalyserNode. Never routed to the speakers (feedback!). Call from a tap. */
   async mic(fft=2048){
     const c=Forge.ctx();

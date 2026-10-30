@@ -68,6 +68,7 @@ const Cannon=(()=>{
   function loop(now){
     raf=requestAnimationFrame(loop);
     const r=read(),sens=+$('#cSens').value;
+    if(Forge.deaf()){sounding=0;prev=r;armed=false;return}   // don’t hear the game’s own voice
     const k=14-10*sens;                                    // how far above the room noise a burst must be (14× … 4×)
     const jump=r>prev*1.8+floor;                           // a sudden rise within one frame = a transient
     if(armed&&r>floor*k&&jump&&now-lastFire>300){armed=false;sounding=0;fire()}
@@ -102,28 +103,28 @@ const Ninja=(()=>{
   const TG={s:{lab:'s',w:'sun',voiced:false,cut:4000,place:'alveolar'},z:{lab:'z',w:'zoo',voiced:true,cut:4000,place:'alveolar'},
             sh:{lab:'ʃ',w:'ship',voiced:false,cut:2500,place:'postalveolar'},zh:{lab:'ʒ',w:'vision',voiced:true,cut:2500,place:'postalveolar'}};
   const stage=$('#nStage'),bz=Breeze.mount($('#nBreeze')),msg=t=>$('#nMsg').textContent=t;
-  let key='s',mic=null,fd=null,raf=0,floor=3,held='',hold=0,lastThrow=0,score=0;
+  let key='s',mic=null,fd=null,noise=null,raf=0,score=0,busy=false,armed=false,cls='',since=0,quietSince=0;
   const mark=chips($('#nTargets'),Object.keys(TG),k=>TG[k],k=>{key=k;msg(TG[k].voiced?'Buzz it! Hand on your throat, then throw the hammer.':'Hiss it! No buzz in the throat, then throw the shuriken.')});mark('s');
 
+  /* Energy per band AFTER subtracting the room's own noise (measured at start), so fans and hum don't count. */
   function analyse(){
     mic.an.getByteFrequencyData(fd);
     const bin=mic.ctx.sampleRate/mic.an.fftSize,cut=TG[key].cut,k0=Math.ceil(80/bin),k1=Math.min(fd.length,Math.floor(10000/bin));
-    let lo=0,hi=0,mid=0,sum=0,pk=0,m=0,mc=0;
+    let lo=0,nl=0,hi=0,nh=0,pk=0;
     for(let k=k0;k<k1;k++){
-      const f=k*bin,p=(fd[k]/255)**2;sum+=fd[k];
-      if(f<1000){lo+=p;m+=fd[k];mc++;if(f<=400&&fd[k]>pk)pk=fd[k]}else if(f<cut)mid+=p;else hi+=p;
+      const f=k*bin,s=Math.max(0,fd[k]-noise[k]-4);
+      if(f<1000){lo+=s;nl++;if(f<=400&&s>pk)pk=s}else if(f>=cut){hi+=s;nh++}
     }
-    const tot=lo+mid+hi||1e-9;m/=Math.max(1,mc);
-    return{loud:sum/Math.max(1,k1-k0),hiss:hi/tot,buzz:lo/tot,pitched:pk>100&&pk>m*1.8};   // pitched = a clear fundamental (80–400 Hz)
+    const loM=lo/Math.max(1,nl),hiM=hi/Math.max(1,nh);
+    return{loM,hiM,pitched:pk>28&&pk>loM*1.8};            // pitched = a clear fundamental (80–400 Hz)
   }
-  function classify(a){
-    if(a.loud<floor*1.8+6)return'';                       // too quiet
-    if(a.buzz>.25&&a.pitched)return'hammer';              // low energy + a fundamental = voiced buzz
-    if(a.hiss>.45)return'shuriken';                       // high-frequency energy dominates = hiss
+  function classify(a,sc){
+    if(a.pitched&&a.loM>10*sc&&a.hiM>5*sc)return'hammer';  // buzz: a clear pitch, with some hiss on top
+    if(!a.pitched&&a.hiM>12*sc)return'shuriken';           // hiss: strong high-frequency energy, no pitch
     return'';
   }
   function throwWeapon(kind){
-    lastThrow=performance.now();bz.play({manner:'fricative',place:TG[key].place});
+    if(busy)return;busy=true;bz.play({manner:'fricative',place:TG[key].place});
     const[sx,sy]=rel($('#nHand'),stage),oni=$('#oni'),[ex,ey]=rel(oni,stage);
     const el=document.createElement('span');el.className='proj';el.innerHTML=kind==='hammer'?HAMMER:SHURIKEN;stage.appendChild(el);
     const at=(x,y,r)=>`translate(${x-22}px,${y-22}px) rotate(${r}deg)`,spin=kind==='hammer'?540:1080;
@@ -137,20 +138,34 @@ const Ninja=(()=>{
         el.animate([{transform:at(ex,ey,spin)},{transform:at(ex-90,ey-70,spin*2),opacity:0}],{duration:420,fill:'forwards'}).finished.then(()=>el.remove());
         msg(`Clang! That was a ${kind==='hammer'?'buzz':'hiss'}. /${t.lab}/ needs a ${t.voiced?'buzz (hammer)':'hiss (shuriken)'}.`);
       }
+      setTimeout(()=>{busy=false},450);
     });
   }
   function loop(now){
     raf=requestAnimationFrame(loop);
-    const a=analyse(),c=classify(a);
-    $('#nHiss').style.setProperty('--v',clamp(a.hiss*100,0,100)+'%');$('#nBuzz').style.setProperty('--v',clamp(a.buzz*100,0,100)+'%');
-    if(c&&c===held)hold++;else hold=c?1:0;held=c;
-    if(c&&hold>=5&&now-lastThrow>800){hold=0;throwWeapon(c)}      // ~5 steady frames before we trust it
+    const a=analyse(),sc=1.5-(+$('#nSens').value);          // sensitivity slider: 0.5× … 1.5× thresholds
+    $('#nHiss').style.setProperty('--v',clamp(a.hiM/60*100,0,100)+'%');$('#nBuzz').style.setProperty('--v',clamp(a.loM/60*100,0,100)+'%');
+    if(Forge.deaf()||busy){cls='';since=0;armed=false;quietSince=0;return}   // ignore the game's own voice and flying weapons
+    const c=classify(a,sc);
+    if(!c){
+      cls='';since=0;
+      if(a.hiM<6*sc&&a.loM<6*sc){if(!quietSince)quietSince=now;if(now-quietSince>300)armed=true}else quietSince=0;   // re-arm only after real quiet
+      return;
+    }
+    quietSince=0;
+    if(c!==cls){cls=c;since=now}
+    if(armed&&now-since>=140){armed=false;throwWeapon(c)}   // steady for ~140 ms → exactly one throw per sound
   }
   async function start(){
     const btn=$('#nStart');if(mic){stop();msg('Microphone off.');return}
     try{
-      msg('Allow the microphone…');mic=await Forge.mic(2048);fd=new Uint8Array(mic.an.frequencyBinCount);
-      msg('Stay quiet for a moment…');floor=await calib(()=>analyse().loud);
+      msg('Allow the microphone…');mic=await Forge.mic(2048);mic.an.smoothingTimeConstant=.5;mic.an.minDecibels=-100;mic.an.maxDecibels=-30;
+      fd=new Uint8Array(mic.an.frequencyBinCount);noise=new Float32Array(fd.length);
+      msg('Stay quiet for a moment…');
+      let n=0;const t0=performance.now();
+      while(performance.now()-t0<800){mic.an.getByteFrequencyData(fd);for(let k=0;k<fd.length;k++)noise[k]+=fd[k];n++;await sleep(30)}
+      for(let k=0;k<noise.length;k++)noise[k]/=Math.max(1,n);
+      armed=false;busy=false;cls='';quietSince=0;
       btn.textContent='Stop microphone';msg(`Ready! Make the sound /${TG[key].lab}/ as in “${TG[key].w}”.`);raf=requestAnimationFrame(loop);
     }catch(e){mic=null;msg('The microphone is blocked. Allow it in the browser, or use the practice buttons.')}
   }

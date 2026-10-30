@@ -99,9 +99,6 @@ html[data-theme] .gamebtn{color:var(--f-on-a)}
 /* ===================== Battle Zones bridge: old tokens → skin tokens ===================== */
 html[data-theme]{--bg:var(--f-bg-img);--panel:var(--f-surface);--edge:var(--f-line);--ink:var(--f-ink);--dim:var(--f-dim);--a:var(--f-a);--b:var(--f-b);--wall:var(--f-faint);--breeze:var(--f-breeze)}
 html[data-theme=mecha]{--display:'Orbitron','Zen Maru Gothic',sans-serif}
-html[data-theme] .btn{color:var(--f-on-a)}
-html[data-theme] .btn.ghost{color:var(--f-ink)}
-html[data-theme] .chip[aria-pressed=true]{color:var(--f-on-b)}
 html[data-theme=day] :is(.note,.dgrid .card){background:#0000000f}
 
 /* ===================== Chart: bigger mouth + zoom ===================== */
@@ -130,3 +127,11 @@ body.pbzoom #profileBox>svg{flex:none;max-height:none;margin:0 auto;width:calc(v
   html[data-theme] .cchip{min-width:72px;min-height:56px}
 }
 html[data-theme] .seg button{min-height:44px}
+
+/* ===================== v3: readable text on every skin ===================== */
+html[data-theme] :is(.fchip,.tryit,.game .opt,.game .gprofile){background:var(--f-surface2)}
+html[data-theme] .game .opt{color:var(--f-ink);border-color:var(--f-line)}
+html[data-theme] .game .opt.correct{background:color-mix(in srgb,var(--f-b) 22%,var(--f-surface));border-color:var(--f-b);color:var(--f-ink)}
+html[data-theme] .game .opt.wrong{background:color-mix(in srgb,var(--f-a) 22%,var(--f-surface));border-color:var(--f-a);color:var(--f-ink)}
+html[data-theme] .gamebtn.on{background:var(--f-surface2);color:var(--f-ink);border:2px solid var(--f-a)}
+html[data-theme] :is(.ctl .btn,.cfbtn){color:var(--f-ink)}
