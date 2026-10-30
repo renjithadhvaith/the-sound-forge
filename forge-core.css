@@ -70,3 +70,63 @@ html[data-theme=night] :is(.cchip .ipa,.sym){text-shadow:var(--f-glow)}
 #awaken span:last-child{color:var(--f-dim);font-size:16px}
 @keyframes forge-orb{to{box-shadow:0 0 0 64px #0000,var(--f-glow)}}
 @media (prefers-reduced-motion:reduce){#awaken .orb{animation:none}#awaken,#awaken.go{transition:none}}
+
+/* ===================== v2: more skins, contrast tokens ===================== */
+html[data-theme=mecha]{
+  --f-bg:#05131a;--f-bg2:#0a2530;--f-surface:#0d2230;--f-surface2:#123043;
+  --f-ink:#e0fbff;--f-dim:#8cc3cd;--f-faint:#5f8896;--f-line:#1f6071;
+  --f-a:#2de2e6;--f-b:#ff3d81;--f-breeze:#ffd23f;
+  --f-glow:0 0 8px #2de2e688;--f-shadow:0 12px 28px -16px #000;
+  --f-bg-img:linear-gradient(170deg,#05131a,#0a2530 70%,#0c2f3a);
+  --f-paper:linear-gradient(#2de2e60d 1px,#0000 1px),linear-gradient(90deg,#2de2e60d 1px,#0000 1px);
+  --f-paper-size:32px 32px,32px 32px;color-scheme:dark}
+html[data-theme=ninja]{
+  --f-bg:#0c0c10;--f-bg2:#191920;--f-surface:#17171d;--f-surface2:#1f1f27;
+  --f-ink:#efe9dc;--f-dim:#a8a396;--f-faint:#77736a;--f-line:#434352;
+  --f-a:#e03a2c;--f-b:#a6c964;--f-breeze:#ffd23f;
+  --f-glow:0 0 8px #ffd23f55;--f-shadow:0 12px 28px -16px #000;
+  --f-bg-img:linear-gradient(170deg,#0c0c10,#191920 70%,#241a1d);
+  --f-paper:repeating-linear-gradient(45deg,#ffffff07 0 2px,#0000 2px 16px);--f-paper-size:auto;color-scheme:dark}
+/* text colour that stays readable on the accent colours */
+html[data-theme=day]{--f-on-a:#fff;--f-on-b:#fff}
+html[data-theme=night]{--f-on-a:#1a1400;--f-on-b:#04222a}
+html[data-theme=yokai]{--f-on-a:#1b0d08;--f-on-b:#04222a}
+html[data-theme=mecha]{--f-on-a:#04222a;--f-on-b:#fff}
+html[data-theme=ninja]{--f-on-a:#fff;--f-on-b:#102018}
+html[data-theme] .gamebtn{color:var(--f-on-a)}
+.forge-tray{max-height:calc(100vh - 96px);overflow:auto}
+
+/* ===================== Battle Zones bridge: old tokens → skin tokens ===================== */
+html[data-theme]{--bg:var(--f-bg-img);--panel:var(--f-surface);--edge:var(--f-line);--ink:var(--f-ink);--dim:var(--f-dim);--a:var(--f-a);--b:var(--f-b);--wall:var(--f-faint);--breeze:var(--f-breeze)}
+html[data-theme=mecha]{--display:'Orbitron','Zen Maru Gothic',sans-serif}
+html[data-theme] .btn{color:var(--f-on-a)}
+html[data-theme] .btn.ghost{color:var(--f-ink)}
+html[data-theme] .chip[aria-pressed=true]{color:var(--f-on-b)}
+html[data-theme=day] :is(.note,.dgrid .card){background:#0000000f}
+
+/* ===================== Chart: bigger mouth + zoom ===================== */
+@media (min-width:1200px){html[data-theme] .wrap{max-width:1180px}}
+.pbWrap{position:relative;flex:1.1 1 0;min-width:0;display:flex}
+html[data-theme] .pbWrap .profileBox{flex:1 1 auto;width:100%;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:8px}
+html[data-theme] .profileBox>svg{width:100%;height:auto;max-height:min(64vh,620px);margin:0 auto}
+.zoomBtn{position:absolute;top:10px;right:10px;z-index:3;min-height:48px;padding:0 14px;display:flex;align-items:center;gap:8px;
+  border-radius:12px;font:800 14px inherit;cursor:pointer;background:var(--f-surface);color:var(--f-ink);border:2px solid var(--f-line);box-shadow:var(--f-shadow)}
+.zoomBtn[hidden]{display:none}
+.zbar{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:12px;right:84px;z-index:95;display:none;gap:8px;align-items:center}
+body.pbzoom .zbar{display:flex}
+.zbar button{min-width:56px;min-height:56px;padding:0 14px;border-radius:14px;font:800 22px inherit;cursor:pointer;background:var(--f-surface);color:var(--f-ink);border:2px solid var(--f-line)}
+.zbar button:disabled{opacity:.4}
+.zbar output{min-width:56px;text-align:center;font-weight:800;color:var(--f-ink)}
+.zbar .zx{margin-left:auto;font-size:15px}
+body.pbzoom{overflow:hidden}
+body.pbzoom .forge-skin{z-index:96}
+body.pbzoom #profileBox{position:fixed;inset:0;z-index:90;overflow:auto;border-radius:0;border:0;-webkit-overflow-scrolling:touch;
+  padding:calc(78px + env(safe-area-inset-top,0px)) 16px calc(24px + env(safe-area-inset-bottom,0px));background:var(--f-bg);align-items:flex-start}
+body.pbzoom #profileBox>svg{flex:none;max-height:none;margin:0 auto;width:calc(var(--z,1)*min(100%,(100vh - 220px)*1.3))}
+
+/* ===================== Touch + small screens ===================== */
+@media (max-width:640px){
+  html[data-theme] header.top h1{font-size:22px}
+  html[data-theme] .cchip{min-width:72px;min-height:56px}
+}
+html[data-theme] .seg button{min-height:44px}

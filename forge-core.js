@@ -6,7 +6,9 @@ const root=document.documentElement,KEY='forge-theme';
 const THEMES={
   day:{n:'Day Mode',jp:'昼',sw:'linear-gradient(135deg,#fffaf0,#eadfc3)'},
   night:{n:'Night Mode',jp:'夜',sw:'linear-gradient(135deg,#14235a,#050816)'},
-  yokai:{n:'Yokai / Mecha',jp:'妖怪',sw:'linear-gradient(135deg,#ff5a3c,#2b1741 55%,#2de2e6)'}};
+  yokai:{n:'Yokai',jp:'妖怪',sw:'linear-gradient(135deg,#ff5a3c,#2b1741)'},
+  mecha:{n:'Mecha',jp:'メカ',sw:'linear-gradient(135deg,#2de2e6,#0a2530)'},
+  ninja:{n:'Ninja',jp:'忍者',sw:'linear-gradient(135deg,#e03a2c,#17171d)'}};
 const store={
   get(k,s){try{return(s?sessionStorage:localStorage).getItem(k)}catch(e){return null}},
   set(k,v,s){try{(s?sessionStorage:localStorage).setItem(k,v)}catch(e){}}};

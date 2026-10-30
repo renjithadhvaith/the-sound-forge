@@ -36,7 +36,7 @@ h1 em{font-weight:600;color:var(--f-a);text-shadow:var(--f-glow)}
 .msg{min-height:3.2em;margin:12px 2px;font-weight:700}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .btn{min-height:60px;padding:0 22px;border-radius:16px;font-weight:800;background:var(--f-surface);border:2px solid var(--f-line)}
-.btn.big{background:var(--f-a);color:var(--f-bg);border-color:var(--f-a);box-shadow:var(--f-glow)}
+.btn.big{background:var(--f-a);color:var(--f-on-a);border-color:var(--f-a);box-shadow:var(--f-glow)}
 .sens{display:flex;align-items:center;gap:10px;color:var(--f-dim);font-weight:700}.sens input{width:160px;height:44px}
 .meters{display:flex;gap:10px;margin-bottom:6px}.meters label{flex:1;font-size:14px;font-weight:800;color:var(--f-dim)}
 .meters i{display:block;height:14px;margin-top:4px;border-radius:8px;background:var(--f-surface2);border:1px solid var(--f-line);overflow:hidden}
@@ -61,6 +61,8 @@ h1 em{font-weight:600;color:var(--f-a);text-shadow:var(--f-glow)}
 #oni.hit{animation:hit .5s}@keyframes hit{25%{transform:translateX(10px) scale(1.05);filter:brightness(2)}60%{transform:translateX(-8px) rotate(-6deg)}}
 .proj{width:44px;height:44px;color:var(--f-a);filter:drop-shadow(0 0 6px var(--f-breeze))}
 .proj svg{width:100%;height:100%}
+@media (min-width:900px){.stage{height:min(52vh,460px)}}
+@media (max-width:640px){.btn{flex:1 1 100%}.chip{flex:1 1 40%}.balloon{width:72px;height:90px}.balloon b{font-size:16px;inset:0 0 22px}.sens{width:100%}.sens input{flex:1}}
 @media (prefers-reduced-motion:reduce){.balloon{animation:none}}
 </style>
 </head>
