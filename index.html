@@ -139,6 +139,7 @@
   .nospeech{ display:none; margin-top:10px; font-size:11.5px; color:var(--clay); }
   @media (prefers-reduced-motion:reduce){ .glow,.burst,.hissline,.nasaldot,.glidedot,.airin,.buzz.voiced .buzzbar{ animation:none!important; } }
 </style>
+<link rel="stylesheet" href="articulation.css">
 </head>
 <body>
 <div class="wrap">
@@ -376,6 +377,7 @@ function selectConsonant(i, el){
   if(selEl) selEl.classList.remove('sel');
   if(el){ el.classList.add('sel'); selEl=el; }
   say(c.word);
+  if(window.ART && ART.has(c.ipa)){ ART.show(c, profileBox, infoEl, accentOf); return; }
   profileBox.innerHTML = profileSVG(c, false);
   const jp = JP[c.ipa] ? `<div class="jp">🇯🇵 <b>Japanese tip:</b> ${JP[c.ipa]}</div>` : '';
   infoEl.innerHTML = `
@@ -469,5 +471,6 @@ document.getElementById('gameBtn').addEventListener('click',()=>{
 /* ===================== init ===================== */
 buildGrid();
 </script>
+<script src="articulation.js"></script>
 </body>
 </html>

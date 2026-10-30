@@ -1,0 +1,36 @@
+/* articulation.css · The Sound Forge: styles for the upgraded consonant card */
+.mouth{width:100%;height:auto;display:block}
+.mouth .lb text{font:9px var(--font-mono);fill:var(--parchment-faint);letter-spacing:.04em}
+#mGateT,#mGt{font:8.5px var(--font-mono);fill:#c9bea9}
+.adot{fill:#ffd23f;filter:drop-shadow(0 0 3px #ffd23f99);opacity:0}
+.bz{fill:var(--accent,#e7ac5f);transform-box:fill-box;transform-origin:center;opacity:.28}
+#mBuzz.on .bz{opacity:1;animation:bzz .16s ease-in-out infinite}
+#mBuzz.on .bz:nth-child(2){animation-delay:.05s}#mBuzz.on .bz:nth-child(3){animation-delay:.1s}#mBuzz.on .bz:nth-child(4){animation-delay:.03s}
+@keyframes bzz{0%,100%{transform:scaleY(.4)}50%{transform:scaleY(1.35)}}
+.pin{cursor:pointer;outline:none;--pc:#ef5350}
+.pin .pring{fill:var(--pc);fill-opacity:.35;stroke:var(--pc);stroke-width:1.6;transform-box:fill-box;transform-origin:center;animation:glowpulse 1.4s ease-in-out infinite}
+.pin .pdot{fill:var(--pc);stroke:#fff;stroke-width:1.2}
+.pin.idle .pring{animation:none;fill-opacity:.15}
+.pin:focus .pring,.pin:hover .pring{stroke:#fff;stroke-width:2.4}
+.pin .tip{font:8.5px var(--font-mono);fill:#fff;text-anchor:middle;opacity:0;paint-order:stroke;stroke:#12100a;stroke-width:3px;pointer-events:none}
+.pin:hover .tip,.pin:focus .tip{opacity:1}
+.tlwrap{margin-top:10px}
+.tl{position:relative;display:flex;gap:4px;background:#120c06;border:1px solid var(--border-soft);border-radius:11px;padding:5px}
+.tseg{flex:1 1 90px;min-width:84px;border-radius:8px;padding:6px 8px;color:#10160a;font-size:12px;line-height:1.25}
+.tseg b{display:block;font-family:var(--font-mono);font-size:11px;letter-spacing:.06em}
+.tseg small{display:block;font-size:10.5px;opacity:.85}
+.tseg.k-f{background:#ef5350}.tseg.k-n{background:#ffb300}.tseg.k-o{background:#66bb6a}
+.tseg.hold{flex-grow:3;background-image:linear-gradient(100deg,transparent 30%,#ffffff55 50%,transparent 70%);background-size:220% 100%;animation:shimmer 2.2s linear infinite}
+@keyframes shimmer{to{background-position:-220% 0}}
+.playhead{position:absolute;top:2px;bottom:2px;width:3px;margin-left:5px;border-radius:2px;background:#fff;box-shadow:0 0 8px #fff;opacity:0;pointer-events:none}
+.tlnote{margin:6px 2px 0;font-size:11px;color:var(--parchment-faint)}
+.ctl{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.ctl .btn{font-size:12.5px;font-weight:700;padding:9px 14px;min-height:44px;border-radius:10px;background:#15100a;border:1px solid var(--border);color:var(--parchment)}
+.ctl .btn:hover{border-color:var(--bud-amber)}
+.factors em{font-style:normal;color:var(--parchment-faint);font-weight:500}
+.factors.a2 .fchip.big{flex:1 1 100%}
+.fchip b{color:var(--parchment)}
+.jp.conf{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.cfbtn{font-size:12.5px;font-weight:700;padding:7px 12px;min-height:40px;border-radius:9px;border:1px solid var(--border);background:#15100a;color:var(--parchment-dim)}
+.cfbtn:hover{border-color:var(--bud-amber);color:var(--parchment)}
+@media (prefers-reduced-motion:reduce){.pin .pring,.tseg.hold,#mBuzz.on .bz{animation:none!important}}
