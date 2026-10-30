@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en" data-skin="yokai">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>Battle Zones &amp; Games · The Sound Forge</title>
+<link href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=Zen+Maru+Gothic:wght@400;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+<style>
+/* ===== module: skins (design tokens) ===== */
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+ --breeze:#ffd23f;--body:'Zen Maru Gothic',system-ui,sans-serif;--display:'Mochiy Pop One','Zen Maru Gothic',sans-serif}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html[data-skin=yokai]{--bg:linear-gradient(170deg,#15122e,#2b1741 70%,#3b1d3a);--panel:#211a44;--edge:#4f4090;--ink:#f8eed6;--dim:#c3b7dc;--a:#f0513a;--b:#7ed6a0;--wall:#c9a56a}
+html[data-skin=mecha]{--bg:linear-gradient(170deg,#05131a,#0a2530 70%,#0c2f3a);--panel:#0d2230;--edge:#1f6071;--ink:#e0fbff;--dim:#8cc3cd;--a:#2de2e6;--b:#ff3d81;--wall:#5f8896;--display:'Orbitron','Zen Maru Gothic',sans-serif}
+html[data-skin=ninja]{--bg:linear-gradient(170deg,#0c0c10,#191920 70%,#241a1d);--panel:#17171d;--edge:#434352;--ink:#efe9dc;--dim:#a8a396;--a:#e03a2c;--b:#a6c964;--wall:#53535f}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font:500 17px/1.6 var(--body);-webkit-tap-highlight-color:transparent;transition:background .4s}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-action:manipulation}
+:focus-visible{outline:3px solid var(--breeze);outline-offset:3px;border-radius:10px}
+.wrap{max-width:1020px;margin:0 auto;padding:22px 16px 70px}
+/* header */
+header.top{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:18px}
+.mascot{font-size:56px;line-height:1;filter:drop-shadow(0 6px 0 rgba(0,0,0,.35));animation:bob 3s ease-in-out infinite}
+h1{font:400 clamp(28px,5vw,44px)/1.05 var(--display);margin:0;color:var(--ink)}
+header p{margin:4px 0 0;color:var(--dim);max-width:46ch}
+.skins{margin-left:auto;display:flex;gap:6px;background:rgba(0,0,0,.3);padding:5px;border-radius:16px;border:2px solid var(--edge)}
+.skins button{padding:10px 14px;border-radius:12px;font-weight:900;font-size:15px;min-height:48px;color:var(--dim)}
+.skins button[aria-pressed=true]{background:var(--a);color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.35)}
+/* zone tabs */
+.zones{display:flex;gap:10px;overflow-x:auto;padding:4px 2px 12px;margin-bottom:6px;scroll-snap-type:x proximity}
+.zones button{flex:none;scroll-snap-align:start;min-width:132px;min-height:76px;padding:10px 14px;border-radius:18px;background:var(--panel);border:2px solid var(--edge);text-align:left;transition:transform .12s}
+.zones button b{display:block;font-size:24px;line-height:1.1}
+.zones button span{font-size:13px;color:var(--dim)}
+.zones button[aria-selected=true]{border-color:var(--breeze);transform:translateY(-3px);box-shadow:0 6px 0 rgba(0,0,0,.35)}
+.card{background:var(--panel);border:2px solid var(--edge);border-radius:24px;padding:20px;margin-bottom:18px}
+h2{font:400 clamp(22px,3.6vw,32px)/1.15 var(--display);margin:0 0 4px}
+h3{font:900 18px/1.3 var(--body);margin:18px 0 6px}
+.sub{color:var(--dim);margin:0 0 14px}
+.btn{background:var(--a);color:#fff;font-weight:900;padding:12px 20px;border-radius:14px;min-height:48px;box-shadow:0 4px 0 rgba(0,0,0,.4);transition:transform .1s}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.4)}
+.btn.ghost{background:transparent;border:2px solid var(--edge);box-shadow:none;color:var(--ink)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{padding:8px 14px;min-height:44px;border-radius:999px;border:2px solid var(--edge);font-weight:700}
+.chip[aria-pressed=true]{background:var(--b);color:#102018;border-color:var(--b)}
+/* breeze lanes */
+.lanes{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}
+@media(max-width:700px){.lanes{grid-template-columns:1fr}}
+.lane svg{width:100%;height:auto;display:block;background:rgba(0,0,0,.28);border:2px solid var(--edge);border-radius:18px}
+.lane figcaption{margin-top:8px;font-size:15px;color:var(--dim)}
+.lane figcaption b{color:var(--ink);font-size:20px}
+.wall{fill:var(--wall)}
+.tube{fill:none;stroke:var(--edge);stroke-width:2;stroke-dasharray:4 6}
+.emo{font-size:20px;text-anchor:middle}
+.lung{font-size:24px}
+.buzz .lung{animation:shake .12s linear infinite}
+.d{fill:var(--breeze);transform-box:fill-box;transform-origin:center;animation-duration:var(--dur,2.6s);animation-iteration-count:infinite;animation-timing-function:ease-in-out;filter:drop-shadow(0 0 3px #ffd23f99)}
+.buzz .d{filter:drop-shadow(0 0 7px #ffd23f)}
+.m-stop .d{animation-name:kStop}.m-fric .d{animation-name:kFric}.m-affr .d{animation-name:kAffr}.m-side .d{animation-name:kSide}.m-float .d{animation-name:kFloat}
+.boom{font-size:30px;text-anchor:middle;opacity:0;transform-box:fill-box;transform-origin:center;animation:kBoom var(--dur,2.6s) infinite}
+.m-affr .boom{animation-name:kBoomA}
+.trail{fill:none;stroke:var(--breeze);stroke-width:3.5;stroke-linecap:round;stroke-dasharray:3 9;opacity:0;animation:kTrail var(--dur,2.6s) linear infinite}
+/* stop: dots queue up (spread -> squashed together), then explode */
+@keyframes kStop{0%{transform:translate(0,0)}50%{transform:translate(var(--bx),0)}58%{transform:translate(var(--bx),0) scale(1.6)}100%{transform:translate(var(--ex),var(--ey)) scale(.3);opacity:0}}
+/* fricative: squeeze through the gap, then ride a wavy line */
+@keyframes kFric{0%{transform:translate(0,0);opacity:1}38%{transform:translate(165px,0) scale(.55)}52%{transform:translate(215px,calc(var(--amp)*-1)) scale(.8)}66%{transform:translate(255px,var(--amp))}80%{transform:translate(295px,calc(var(--amp)*-1))}100%{transform:translate(335px,var(--amp));opacity:0}}
+/* affricate = stop then fricative */
+@keyframes kAffr{0%{transform:translate(0,0)}34%{transform:translate(var(--bx),0)}44%{transform:translate(var(--bx),0) scale(1.6)}58%{transform:translate(185px,0) scale(.55)}100%{transform:translate(var(--ex),var(--ey)) scale(.8);opacity:0}}
+@keyframes kSide{0%{transform:translate(0,0)}36%{transform:translate(165px,0)}56%{transform:translate(205px,var(--sy))}100%{transform:translate(335px,calc(var(--sy)*.35));opacity:0}}
+@keyframes kFloat{0%{transform:translate(0,0)}40%{transform:translate(150px,6px)}60%{transform:translate(205px,14px)}100%{transform:translate(335px,14px);opacity:0}}
+@keyframes kBoom{0%,50%{opacity:0;transform:scale(.3)}58%{opacity:1;transform:scale(1.5)}78%,100%{opacity:0;transform:scale(1.9)}}
+@keyframes kBoomA{0%,36%{opacity:0;transform:scale(.3)}44%{opacity:1;transform:scale(1.5)}62%,100%{opacity:0;transform:scale(1.9)}}
+@keyframes kTrail{0%,40%{opacity:0;stroke-dashoffset:0}55%,85%{opacity:.9}100%{opacity:0;stroke-dashoffset:-72}}
+@keyframes bob{50%{transform:translateY(-6px) rotate(3deg)}}
+@keyframes shake{0%{transform:translateX(-2px)}50%{transform:translateX(2px)}100%{transform:translateX(-2px)}}
+/* copy */
+.copy p{max-width:62ch;margin:0 0 10px}
+.copy ol{max-width:62ch;padding-left:1.3em;margin:0 0 10px}.copy li{margin-bottom:6px}
+.note{display:flex;gap:10px;background:rgba(0,0,0,.25);border-radius:14px;padding:12px 14px;margin:10px 0;max-width:62ch}
+.win{font-family:var(--display);font-size:20px;color:var(--breeze);margin-top:12px}
+/* game A */
+.gA{display:grid;grid-template-columns:200px 1fr;gap:20px;align-items:center}
+@media(max-width:620px){.gA{grid-template-columns:1fr;justify-items:center}}
+.ring{--c:0;width:190px;height:190px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--breeze) calc(var(--c)*1%),rgba(0,0,0,.35) 0);position:relative}
+.ring::before{content:"";position:absolute;inset:12px;border-radius:50%;background:var(--panel)}
+.ring .face{position:relative;font-size:calc(52px + var(--c)*.5px);transition:font-size .1s;filter:drop-shadow(0 0 calc(var(--c)*.2px) var(--breeze))}
+.ring.won .face{animation:bob .5s ease-in-out 4}
+.meters{width:100%;display:grid;gap:8px}
+.meter{display:grid;grid-template-columns:76px 1fr;gap:10px;align-items:center;font-size:14px;color:var(--dim)}
+.meter i{display:block;height:14px;border-radius:9px;background:rgba(0,0,0,.35);overflow:hidden}
+.meter i::after{content:"";display:block;height:100%;width:var(--v,0%);background:var(--b);transition:width .08s}
+.meter.hot i::after{background:var(--breeze)}
+#gMsg{min-height:3.2em;font-weight:700;margin:8px 0}
+.dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.dgrid .card{margin:0;background:rgba(0,0,0,.2)}
+.dgrid h3{margin-top:0}.dgrid p{margin:0 0 6px;font-size:15px}
+@media(prefers-reduced-motion:reduce){.d,.boom,.trail,.mascot,.buzz .lung{animation:none!important}.trail{opacity:.9}}
+</style>
+<link rel="stylesheet" href="articulation.css">
+<style>
+.dk{--parchment:#f4ecdc;--parchment-dim:#c9bea9;--parchment-faint:#8d8371;--border:#4a3c28;--border-soft:#3a2f1f;--bud-amber:#e7ac5f;--font-mono:ui-monospace,Menlo,monospace;--accent:#e7ac5f}
+.mwrap{background:#1c140b;border:2px solid var(--edge);border-radius:18px;padding:10px}
+.hdrbtn{text-decoration:none;display:inline-flex;align-items:center;min-height:48px}
+html[data-mode=day][data-skin]{--bg:linear-gradient(170deg,#fff7e6,#ffe9c7);--panel:#fffdf6;--edge:#d9c7a0;--ink:#2a2013;--dim:#5b4d36}
+html[data-mode=day][data-skin=mecha]{--bg:linear-gradient(170deg,#e9fbff,#cfeff5);--panel:#fafeff;--edge:#9fd3dc;--ink:#082a33;--dim:#3d6b75}
+html[data-mode=day][data-skin=ninja]{--bg:linear-gradient(170deg,#f3efe6,#e2dccd);--panel:#fbf9f3;--edge:#cfc7b4;--ink:#1d1b17;--dim:#58534a}
+html[data-mode=day] .note,html[data-mode=day] .dgrid .card{background:rgba(0,0,0,.06)}
+html[data-mode=day] .win{color:#a35a00}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+ <div class="mascot" id="mascot" aria-hidden="true"></div>
+ <div><h1>The Sound Forge</h1><p id="hi"></p></div>
+ <a class="btn ghost hdrbtn" href="./">← Consonant chart</a><button class="btn ghost" id="modeBtn" aria-pressed="false">☀️ Day</button>
+ <div class="skins" id="skins" role="group" aria-label="Choose a skin"></div>
+</header>
+<nav class="zones" id="zones" role="tablist" aria-label="Battle zones"></nav>
+<main>
+ <section class="card" id="zone" role="tabpanel"></section>
+ <section class="card" id="game">
+  <h2 id="gTitle"></h2>
+  <p class="sub">Say the sound out loud and hold it. The louder your breeze is the right shape, the faster the power bar fills.</p>
+  <div class="chips" id="gTargets" role="group" aria-label="Pick a sound"></div>
+  <div class="gA" style="margin-top:16px">
+   <div class="ring" id="ring"><div class="face" id="face"></div></div>
+   <div>
+    <div class="meters">
+     <div class="meter" id="mLoud"><span>Breath</span><i></i></div>
+     <div class="meter" id="mHiss"><span>Hiss</span><i></i></div>
+     <div class="meter" id="mBuzz"><span>Buzz</span><i></i></div>
+    </div>
+    <div id="gMsg" aria-live="polite">Tap start, then say the sound.</div>
+    <button class="btn" id="gStart">🎤 Start</button>
+    <button class="btn ghost" id="gHold" title="No microphone? Hold to practise the animation">✋ Hold (no mic)</button>
+   </div>
+  </div>
+ </section>
+ <section class="card" id="doc"></section>
+</main>
+</div>
+<script src="articulation.js"></script>
+<script>
+/* ===== module: data ===== */
+const SKINS={
+ yokai:{tab:'🐸 Yokai',mascot:'🐸',who:'Kappa Kaji',hi:'Ho ho! Feed the forge with breeze and tame the yokai sounds!',stop:'taiko drum',stopE:'🥁',sq:'tengu’s keyhole',sqE:'👺',lung:'🫧',gameT:'Tame the yokai',face:['😴','🐸','👹','🐲'],win:'The yokai bows to you!',desc:'Folklore: kappa, mochi, taiko, tengu.'},
+ mecha:{tab:'🤖 Mecha',mascot:'🤖',who:'Gearo-9',hi:'Systems online. Pump breeze into the reactor, pilot!',stop:'blast door',stopE:'🚪',sq:'laser slit',sqE:'⚡',lung:'🔋',gameT:'Power the machine',face:['🔌','⚙️','🤖','🚀'],win:'Reactor at 100%!',desc:'Sci-fi: gears, lasers, circuit boards.'},
+ ninja:{tab:'🥷 Ninja',mascot:'🥷',who:'Sensei Kage',hi:'Shh… the breeze is our weapon. Learn each trap, stay silent.',stop:'trap door',stopE:'🪤',sq:'bamboo slit',sqE:'🎋',lung:'🌬️',gameT:'Charge the shuriken',face:['🌑','✴️','🌀','🌟'],win:'Shuriken charged!',desc:'Stealth: shuriken, wind, traps, shadows.'}
+};
+/* mode: stop | fric | affr | side | float. gap = slit height, amp = wave height, buzz = throat buzz ON */
+const L=(ipa,word,mode,say,o={})=>Object.assign({ipa,word,mode,say,gap:14,amp:10,dur:2.8,buzz:false},o);
+const ZONES=[
+ {id:'z1',icon:'🐍',name:'Snake vs. Giant',sounds:'/s/ vs /ʃ/',
+  pairs:[[L('s','sea','fric','A snake hisses through a pin-hole. Thin, fast, high.',{gap:8,amp:6,dur:2.2}),L('ʃ','she','fric','A hushing giant: a wide gap, slow, big waves.',{gap:22,amp:17,dur:3.4})]],
+  metaphor:'The Snake squeezes the breeze through a pin-hole. The Hushing Giant has a wider gap and puffs his lips out.',
+  anim:'Both lanes squeeze through a slit. Snake: tiny gap, small fast zig-zag. Giant: wide gap, big slow waves.',
+  cue:'Snake: smile and keep your teeth close, “sss”. Giant: round your lips like a trumpet, “shhh”.'},
+ {id:'z2',icon:'🥁',name:'Tuesday Trap',sounds:'/t/ vs /θ/',
+  pairs:[[L('t','tree','stop','The tongue taps the roof. The breeze is trapped, then POP!',{dur:2.6}),L('θ','three','fric','The tongue peeks out. The breeze slips past in a wavy line.',{gap:16,amp:11})]],
+  metaphor:'T is a drum beat: the tongue taps and bounces away. TH is a shy peek: the tongue rests on the teeth and the air slides by.',
+  anim:'Left lane: dots queue up at the wall, squash together, 💥. Right lane: dots squeeze through the gap and turn into 〰️.',
+  cue:'T: tap the bumpy ridge behind your top teeth. TH: show the tip of your tongue and blow softly. No buzz for either.',
+  copy:{story:['Deep in the Forge, Kappa Kaji beats a giant taiko drum: <b>TA! TA! TA!</b> His tongue taps the roof of his mouth, one quick bump, then it springs away. That is the <b>T drum</b> 🥁.','But beware! A sneaky yokai hides inside the word <b>THREE</b>. If your tongue taps the drum, the <b>Tuesday Trap</b> snaps shut and “three” turns into “tree” 🌳!','The <b>TH yokai</b> never taps. He is shy. He peeks his tongue between his teeth like a little kappa popping out of the river, and the yellow breeze slips past in a soft, wavy line 〰️.'],
+   steps:['Show just the tip of your tongue, a tiny peek, like a shy kappa.','Rest it lightly on your teeth. Don’t tap the drum!','Blow a soft breeze: <b>thhhh</b>. Watch the dots escape in a wavy line.','Hand on your throat: quiet. This yokai whispers.'],
+   tip:'Tuesday starts with the drum (T). Thursday starts with the peek (TH).',
+   words:['tree / three','tank / thank','tin / thin','taught / thought','Tuesday / Thursday'],
+   win:'Drum for T. Peek for TH. Trap escaped!'}},
+ {id:'z3',icon:'👄',name:'Lip Busters',sounds:'/b/ /v/ /w/',
+  pairs:[[L('b','berry','stop','Both lips slam shut, then POP!',{dur:2.4}),L('v','very','fric','Top teeth on the bottom lip. Buzzing air squeezes out.',{gap:12,amp:9,buzz:true})],
+         [L('w','west','float','Lips make a round tunnel. The breeze glides straight through, no teeth.',{buzz:true,dur:3}),L('v','vest','fric','Teeth touch the lip. The breeze is squeezed.',{gap:12,amp:9,buzz:true})]],
+  metaphor:'B is a lip door that slams. V is a bite: teeth on lip with a buzz. W is a round lip tunnel with no teeth at all.',
+  anim:'B: pop at the door. V: tiny slit between teeth and lip, with the lungs shaking (buzz). W: a smooth glide, nothing touches.',
+  cue:'B: close both lips, then pop. V: bite your lower lip lightly and buzz. W: make an “oo” tunnel with your lips. No teeth!'},
+ {id:'z4',icon:'🐉',name:'Twin Dragons',sounds:'/tʃ/ vs /dʒ/',
+  pairs:[[L('tʃ','chair','affr','Chi-Chi’s snow breath: slam, then shhh. Quiet.',{dur:3,amp:12,gap:16}),L('dʒ','jar','affr','Jii-Jii’s thunder breath: slam, then shhh, with a rumble.',{dur:3,amp:12,gap:16,buzz:true})]],
+  metaphor:'Two dragon twins use the same trick: slam the door, then hush. Chi-Chi breathes quiet snow. Jii-Jii breathes rumbling thunder.',
+  anim:'Both lanes do 💥 then squeeze into 〰️. Only Jii-Jii’s lungs shake, and his dots glow brighter, because his throat buzzes.',
+  cue:'Put your hand on your throat. CH: nothing moves. J: it buzzes like a bee.',
+  copy:{story:['Two dragon twins guard the Forge gate. <b>Chi-Chi</b> breathes cold <b>snow</b> ❄️, and <b>Jii-Jii</b> breathes rumbling <b>thunder</b> ⚡.','They share one secret trick. First they <b>slam the door</b>: the tongue hits the roof and traps the breeze 💥. Then they let it out as a hush: <b>shhh</b> 〰️. Slam, then hush: “t-shhh”!','Chi-Chi’s snow breath is silent. That’s <b>CH</b> as in <i>chair</i>. Jii-Jii does exactly the same, but with a thunder rumble in his throat. That’s <b>J</b> as in <i>jar</i>. In Japanese, チ and ジ are twins too!'],
+   steps:['Tongue slams the roof, just behind your top teeth. Door shut. Breeze trapped!','The door pops open and your lips round a little: <b>shhh</b>.','Hand on your throat. Quiet snow = <b>CH</b>. Buzzing thunder = <b>J</b>.'],
+   tip:'Pick a dragon and say it twice: “chair, chair”, then “jar, jar”. Feel the difference in your hand.',
+   words:['cheap / jeep','choke / joke','chain / Jane','March / Marge','rich / ridge'],
+   win:'Snow or thunder? You chose the right dragon!'}},
+ {id:'z5',icon:'🌊',name:'Rolling River',sounds:'/l/ vs /r/',
+  pairs:[[L('l','light','side','The tongue tip touches the roof. The breeze splits and flows around both sides.',{dur:3,buzz:true}),L('r','right','float','The tongue floats and touches nothing. The breeze glides underneath.',{dur:3,buzz:true})]],
+  metaphor:'L is a stone in the river: the tongue tip touches and the water flows around it. R is a floating leaf: nothing touches, so the river runs smoothly.',
+  anim:'L lane: dots hit the tongue-stone and split up and down. R lane: the tongue hovers, dots glide below it, untouched.',
+  cue:'L: tap your tongue tip on the ridge and keep it there. R: curl your tongue back and let it float. Touch nothing!'}
+];
+const GAMEA={
+ s:{lab:'s',hiss:1,voiced:0,c:[5200,13000],hint:{lo:'Higher! Smile and make the gap tiny.'}},
+ sh:{lab:'sh',hiss:1,voiced:0,c:[1800,5000],hint:{hi:'Lower! Push your lips out like a trumpet.'}},
+ z:{lab:'z',hiss:1,voiced:1,c:[5000,13000],hint:{lo:'Higher! Smile and make the gap tiny.'}},
+ zh:{lab:'zh',hiss:1,voiced:1,c:[1800,5000],hint:{hi:'Lower! Round your lips.'}}
+};
+const $=(s,r=document)=>r.querySelector(s),clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const state={skin:'yokai',zone:1,pair:0,target:'s'};
+const sk=()=>SKINS[state.skin];
+
+/* ===== module: speech + sfx ===== */
+function say(w){const s=window.speechSynthesis;if(!s)return;s.cancel();const u=new SpeechSynthesisUtterance(w.replace(/\s*\/\s*/g,', '));u.lang='en-US';u.rate=.8;s.speak(u)}
+let AC;function ac(){AC=AC||new(window.AudioContext||window.webkitAudioContext)();AC.resume();return AC}
+function tone(f,t0,d,type='triangle',v=.12){const a=ac(),o=a.createOscillator(),g=a.createGain(),t=a.currentTime+t0;o.type=type;o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+d+.05)}
+const fanfare=()=>[523,659,784,1047].forEach((f,i)=>tone(f,i*.1,.3));
+
+/* ===== module: breeze animation (SVG + CSS) ===== */
+const X0=30,Y=65,WALL=200;
+function waveD(x1,x2,y,amp,wl){let d=`M${x1} ${y}`;for(let x=x1;x<x2;x+=wl)d+=` q${wl/4} ${-amp} ${wl/2} 0 t${wl/2} 0`;return d}
+function laneSVG(p){
+ const N=10,s=sk(),m=p.mode,g=p.gap;let wall='',dots='',extra='';
+ if(m==='stop'||m==='affr'){wall=`<rect class="wall" x="${WALL-6}" y="8" width="14" height="114" rx="5"/>`}
+ else if(m==='fric'){wall=`<rect class="wall" x="${WALL-6}" y="8" width="14" height="${Y-g/2-8}" rx="5"/><rect class="wall" x="${WALL-6}" y="${Y+g/2}" width="14" height="${122-Y-g/2}" rx="5"/>`}
+ else if(m==='side'){wall=`<ellipse class="wall" cx="${WALL+4}" cy="${Y}" rx="13" ry="27"/>`}
+ else{wall=`<ellipse class="wall" cx="${WALL+4}" cy="26" rx="26" ry="11"/><text x="${WALL+4}" y="52" class="emo" style="font-size:12px;fill:var(--dim)">no touch</text>`}
+ const wy=m==='fric'||m==='affr'?Y:Y;
+ const icon=(m==='stop'||m==='affr')?s.stopE:(m==='fric'?s.sqE:'');
+ if(icon)extra+=`<text class="emo" x="${WALL+1}" y="${m==='fric'?Y-g/2-14:20}">${icon}</text>`;
+ if(m==='stop'||m==='affr')extra+=`<text class="boom" x="${WALL-30}" y="${Y+10}">💥</text>`;
+ if(m==='fric'||m==='affr')extra+=`<path class="trail" d="${waveD(WALL+16,350,Y,p.amp,34)}"/>`;
+ for(let i=0;i<N;i++){
+  const spread=(m==='stop'||m==='affr');
+  const cx=spread?X0+i*14:X0,bx=(WALL-12-i*(m==='affr'?4:5))-cx,ex=WALL+40+Math.random()*130,ey=(Math.random()-.5)*110;
+  const wx=(WALL+30+i*12)-cx,wy2=Math.sin(i*1.1)*p.amp*1.3;
+  const st=`--bx:${bx}px;--ex:${m==='affr'?wx:ex-cx}px;--ey:${m==='affr'?wy2:ey}px;--amp:${p.amp}px;--sy:${i%2?30:-30}px;animation-delay:${spread?0:i*.11}s`;
+  dots+=`<circle class="d" cx="${cx}" cy="${Y}" r="5.5" style="${st}"/>`;
+ }
+ return `<svg viewBox="0 0 360 130" class="m-${m}${p.buzz?' buzz':''}" style="--dur:${p.dur}s" role="img" aria-label="Breeze animation for ${p.ipa}"><path class="tube" d="M16 8H350M16 122H350"/><text class="lung" x="4" y="${Y+8}">${s.lung}</text>${wall}${extra}${dots}</svg>`;
+}
+function caption(p){const s=sk();const mm={stop:`The breeze hits the ${s.stop} and 💥`,fric:`The breeze squeezes through the ${s.sq} and turns into 〰️`,affr:`💥 on the ${s.stop}, then 〰️ through the ${s.sq}`,side:'The breeze splits around the tongue',float:'The breeze glides under the tongue'}[p.mode];
+ return `<b>/${p.ipa}/</b> ${p.word} <button class="chip" data-say="${p.word}" aria-label="Hear ${p.word}">🔊</button><br>${mm}.${p.buzz?' <b>Throat buzz ON.</b>':''}<br><span>${p.say}</span>`}
+
+/* ===== module: UI render ===== */
+function renderSkins(){const el=$('#skins');el.innerHTML=Object.entries(SKINS).map(([k,v])=>`<button data-skin="${k}" aria-pressed="${k===state.skin}">${v.tab}</button>`).join('')}
+function applySkin(k){state.skin=k;document.documentElement.dataset.skin=k;try{localStorage.setItem('sf-skin',k)}catch(e){}
+ const s=sk();$('#mascot').textContent=s.mascot;$('#hi').textContent=`${s.who}: ${s.hi}`;$('#gTitle').textContent=`${s.mascot} ${s.gameT}`;$('#face').textContent=s.face[0];
+ renderSkins();renderZone();renderDoc()}
+function renderZones(){$('#zones').innerHTML=ZONES.map((z,i)=>`<button role="tab" data-zone="${i}" aria-selected="${i===state.zone}"><b>${z.icon}</b>${z.name}<br><span>${z.sounds}</span></button>`).join('')}
+function renderZone(){
+ const z=ZONES[state.zone],pair=z.pairs[state.pair]||z.pairs[0],c=z.copy;
+ const toggles=z.pairs.length>1?`<div class="chips" style="margin-bottom:8px">${z.pairs.map((p,i)=>`<button class="chip" data-pair="${i}" aria-pressed="${i===state.pair}">${p[0].ipa} vs ${p[1].ipa}</button>`).join('')}</div>`:'';
+ const body=c?`<div class="copy"><h3>The story</h3>${c.story.map(t=>`<p>${t}</p>`).join('')}<h3>Forge steps</h3><ol>${c.steps.map(t=>`<li>${t}</li>`).join('')}</ol><div class="note"><span>💡</span><span>${c.tip}</span></div><h3>Say it out loud</h3><div class="chips">${c.words.map(w=>`<button class="chip" data-say="${w}">🔊 ${w}</button>`).join('')}</div><div class="win">${c.win}</div></div>`
+ :`<div class="copy"><p>${z.metaphor}</p><div class="note"><span>👄</span><span>${z.cue}</span></div></div>`;
+ $('#zone').innerHTML=`<h2>${z.icon} ${z.name} <span style="font-size:.6em;color:var(--dim)">${z.sounds}</span></h2><p class="sub">${c?'':'What the breeze does:'} ${c?z.metaphor:z.anim}</p>${toggles}
+ <div class="lanes">${pair.map(p=>`<figure class="lane" style="margin:0"><div class="mwrap dk" data-ipa="${p.ipa}" data-word="${p.word}"></div><figcaption>${caption(p)}</figcaption></figure>`).join('')}</div>
+ <button class="btn ghost" id="replay">🔁 Replay both mouths</button>${body}${c?`<div class="note"><span>🎬</span><span>${z.anim}<br>${z.cue}</span></div>`:''}`;
+ document.querySelectorAll('#zone .mwrap').forEach(m=>ART.show({ipa:m.dataset.ipa,word:m.dataset.word},m,null));
+}
+function renderDoc(){
+ $('#doc').innerHTML=`<h2>Design notes</h2><p class="sub">Three skins, one engine. Only the words, icons and colours change.</p><div class="dgrid">`+
+ Object.values(SKINS).map(s=>`<div class="card"><h3>${s.mascot} ${s.who}</h3><p>${s.desc}</p><p>Stop = ${s.stopE} ${s.stop}<br>Squeeze = ${s.sqE} ${s.sq}</p><p>“${s.win}”</p></div>`).join('')+
+ `<div class="card"><h3>🧲 Game B: Tongue Tuner</h3><p>Pointer Events with <code>setPointerCapture</code> and <code>touch-action:none</code>. Drag the tongue in a mouth profile. Distance to the target spot sets the slit size (<code>gap = clamp(dist/4, 4, 30)</code>), so the dots visibly escape as the tongue gets closer. Hold within 12px for 0.4s to win.</p></div>
+  <div class="card"><h3>🧭 Game C: Breeze Maze</h3><p><code>deviceorientation</code> gamma/beta set gravity for the dots. Gates: a stop gate that only opens on a tap (POP), a fricative slit that squeezes the dots, a nasal tube. On iOS, call <code>DeviceOrientationEvent.requestPermission()</code> from a button press. Add arrow keys and touch-drag as a fallback.</p></div></div>`;
+}
+
+/* ===== module: game A, microphone hiss / buzz detector ===== */
+const Mic=(()=>{
+ let ctx,an,td,fd,stream,floor=.004,run=false;
+ async function start(){
+  if(!navigator.mediaDevices?.getUserMedia)throw new Error('nomic');
+  ctx=ac();stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});
+  an=ctx.createAnalyser();an.fftSize=2048;an.smoothingTimeConstant=.5;
+  ctx.createMediaStreamSource(stream).connect(an); // never connect to speakers: feedback!
+  td=new Float32Array(an.fftSize);fd=new Float32Array(an.frequencyBinCount);run=true;
+  await new Promise(r=>setTimeout(r,500));floor=Math.max(.004,read().rms*1.6); // room noise floor
+ }
+ function stop(){run=false;stream&&stream.getTracks().forEach(t=>t.stop())}
+ function read(){
+  an.getFloatTimeDomainData(td);an.getFloatFrequencyData(fd);
+  let e=0;for(const v of td)e+=v*v;const rms=Math.sqrt(e/td.length);
+  const sr=ctx.sampleRate,bin=sr/an.fftSize,top=Math.min(sr/2,12000);
+  let tot=0,lo=0,hf=0,cn=0,cd=0;
+  for(let k=Math.ceil(80/bin);k<top/bin;k++){const f=k*bin,p=Math.pow(10,fd[k]/10);tot+=p;if(f<500)lo+=p;if(f>=2000){hf+=p;cn+=f*p;cd+=p}}
+  const centroid=cd?cn/cd:0,hfShare=tot?hf/tot:0,loShare=tot?lo/tot:0;
+  // voicing = periodicity of the waveform at 70–400 Hz (normalised autocorrelation)
+  let a0=0;const n=1024;for(let i=0;i<n;i++)a0+=td[i]*td[i];let best=0;
+  for(let lag=Math.floor(sr/400);lag<=Math.floor(sr/70);lag+=2){let s=0;for(let i=0;i<n;i++)s+=td[i]*td[i+lag];best=Math.max(best,s/(a0||1))}
+  const loud=rms>Math.max(floor*2,.012);
+  return{rms,loud,centroid,hfShare,periodicity:best,voiced:loud&&best>.35&&loShare>.1,hiss:loud&&hfShare>.4};
+ }
+ return{start,stop,read,get on(){return run}};
+})();
+const GA={charge:0,won:false,last:0,sim:false,raf:0};
+function judge(r,t){ // returns {ok,msg}
+ if(!r.loud)return{ok:false,msg:'Take a breath and make the sound louder.'};
+ if(!r.hiss)return{ok:false,msg:'I can’t hear the hiss. Push the breeze through a smaller gap.'};
+ if(t.voiced&&!r.voiced)return{ok:false,msg:'Add the throat buzz. Hand on your throat!'};
+ if(!t.voiced&&r.voiced)return{ok:false,msg:'Switch the buzz off. Breathe, don’t hum.'};
+ if(r.centroid<t.c[0])return{ok:false,msg:t.hint.lo||'Make the hiss higher.'};
+ if(r.centroid>t.c[1])return{ok:false,msg:t.hint.hi||'Make the hiss lower.'};
+ return{ok:true,msg:'Yes! Keep it going…'};
+}
+function loop(now){
+ const dt=Math.min(.1,(now-GA.last)/1000||0);GA.last=now;const t=GAMEA[state.target];let r,j;
+ if(GA.sim){r={rms:.1,loud:true,centroid:(t.c[0]+t.c[1])/2,hfShare:.8,periodicity:t.voiced?.7:.1,voiced:!!t.voiced,hiss:true};j={ok:true,msg:'Practice mode: the bar fills.'}}
+ else{r=Mic.read();j=judge(r,t)}
+ GA.charge=clamp(GA.charge+(j.ok?dt/2.2:-dt/5),0,1);
+ const set=(id,v,hot)=>{const m=$(id);m.style.setProperty('--v',clamp(v,0,1)*100+'%');m.classList.toggle('hot',!!hot)};
+ set('#mLoud',r.rms*8,r.loud);set('#mHiss',r.hfShare*1.4,r.hiss);set('#mBuzz',r.periodicity*1.5,r.voiced);
+ const c=GA.charge*100,s=sk();$('#ring').style.setProperty('--c',c);$('#face').textContent=s.face[Math.min(3,Math.floor(GA.charge*3.99))];
+ if(!GA.won)$('#gMsg').textContent=j.msg;
+ if(GA.charge>=1&&!GA.won){GA.won=true;fanfare();$('#gMsg').textContent=`🎉 ${s.win}`;$('#ring').classList.add('won');setTimeout(()=>{GA.won=false;GA.charge=0;$('#ring').classList.remove('won')},3200)}
+ GA.raf=requestAnimationFrame(loop);
+}
+function startLoop(){cancelAnimationFrame(GA.raf);GA.last=performance.now();GA.raf=requestAnimationFrame(loop)}
+function renderTargets(){$('#gTargets').innerHTML=Object.entries(GAMEA).map(([k,v])=>`<button class="chip" data-target="${k}" aria-pressed="${k===state.target}">/${v.lab}/ ${v.voiced?'buzz + hiss':'hiss only'}</button>`).join('')}
+
+/* ===== module: events + boot ===== */
+document.addEventListener('click',e=>{
+ const b=e.target.closest('button');if(!b)return;
+ if(b.dataset.skin)applySkin(b.dataset.skin);
+ else if(b.dataset.zone){state.zone=+b.dataset.zone;state.pair=0;renderZones();renderZone()}
+ else if(b.dataset.pair){state.pair=+b.dataset.pair;renderZone()}
+ else if(b.dataset.say)say(b.dataset.say);
+ else if(b.dataset.target){state.target=b.dataset.target;GA.charge=0;renderTargets()}
+ else if(b.id==='replay')renderZone();
+ else if(b.id==='gStart'){
+  if(Mic.on){Mic.stop();cancelAnimationFrame(GA.raf);b.textContent='🎤 Start';$('#gMsg').textContent='Mic off.';return}
+  $('#gMsg').textContent='Asking for the microphone…';
+  Mic.start().then(()=>{b.textContent='⏹ Stop';startLoop()}).catch(()=>{$('#gMsg').textContent='Microphone blocked. Allow it in the browser, or use Hold (no mic).'});
+ }
+});
+const hold=$('#gHold');
+hold.addEventListener('pointerdown',()=>{GA.sim=true;ac();startLoop()});
+['pointerup','pointercancel','pointerleave'].forEach(ev=>hold.addEventListener(ev,()=>{GA.sim=false;if(!Mic.on)cancelAnimationFrame(GA.raf)}));
+let saved;try{saved=localStorage.getItem('sf-skin')}catch(e){}
+renderZones();renderTargets();applySkin(SKINS[saved]?saved:'yokai');
+</script>
+<script>
+/* day / night switch */
+(function(){const h=document.documentElement,b=document.getElementById('modeBtn');let m;try{m=localStorage.getItem('sf-mode')}catch(e){}
+ m=m||(matchMedia('(prefers-color-scheme: light)').matches?'day':'night');
+ const set=x=>{h.dataset.mode=x;b.textContent=x==='day'?'🌙 Night':'☀️ Day';b.setAttribute('aria-pressed',x==='day');try{localStorage.setItem('sf-mode',x)}catch(e){}};
+ b.onclick=()=>set(h.dataset.mode==='day'?'night':'day');set(m)})();
+</script>
+</body>
+</html>

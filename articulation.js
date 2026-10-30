@@ -97,16 +97,16 @@ function mouthSVG(d,acc){
 }
 
 /* ===== 5. ANIMATOR ===== */
-let cur=null,raf=0,SLOW=10;
+let SLOW=10;const loops=new Map();
 function show(c,profileBox,infoEl,accentOf){
- cancelAnimationFrame(raf);
- const d=DATA[c.ipa],acc=accentOf(c),sym=d.ipa;
+ let raf=0;const pl=loops.get(profileBox);pl&&pl();loops.set(profileBox,()=>cancelAnimationFrame(raf));
+ const d=DATA[c.ipa],acc=accentOf?accentOf(c):'#e7ac5f';
  const ph=d.phases;
  const tl=ph.map((p,i)=>`<div class="tseg k-${p[3]}${stretchy(d,i,p)?' hold':''}" data-i="${i}"><b>${p[0]}</b><small>${p[5]}</small></div>`).join('');
  profileBox.innerHTML=`${mouthSVG(d,acc)}
   <div class="tlwrap"><div class="tl" id="tl">${tl}<i class="playhead" id="playhead"></i></div>
   <p class="tlnote" id="tlnote"></p>
-  <div class="ctl"><button class="btn" id="replay">▶ Replay</button><button class="btn" id="slow" aria-pressed="true">🐢 Slow-motion ×10</button></div></div>`;
+  <div class="ctl"><button class="btn" id="aReplay">▶ Replay</button><button class="btn" id="aSlow" aria-pressed="true">🐢 Slow-motion ×10</button></div></div>`;
  const g=(s)=>profileBox.querySelector(s),gp=[...profileBox.querySelectorAll('.pin')];
  const E={tongue:g('#mTongue'),vel:g('#mVel'),uv:g('#mUvula'),jaw:g('#mJaw'),up:g('#mUp'),lo:g('#mLo'),buzz:g('#mBuzz'),gate:g('#mGateT'),dots:[...profileBox.querySelectorAll('.adot')],
   gauge:g('#mGauge'),gr:g('#mGr'),gt:g('#mGt'),gbg:g('#mGbg'),ph:g('#playhead'),segs:[...profileBox.querySelectorAll('.tseg')],note:g('#tlnote'),svg:g('svg.mouth')};
@@ -115,7 +115,7 @@ function show(c,profileBox,infoEl,accentOf){
  const plan=()=>{const segs=[{k:'in',dur:SLOW>1?450:200,pose:ph[0][2],air:null}];
   ph.forEach((p,i)=>segs.push({k:'ph',i,pose:p[2],c:p[3],air:p[4],dur:p[1]==null?1600:Math.max(p[1]*SLOW,SLOW>1?320:45)}));
   segs.push({k:'out',dur:450,pose:'REST'},{k:'wait',dur:500,pose:'REST'});return segs};
- let segs=plan(),t0=performance.now(),last=t0,mode=null,route=[],cum=[],sPin=0;
+ let segs=plan(),t0=performance.now(),last=t0,mode=null,sl=SLOW,route=[],cum=[],sPin=0;
  E.note.textContent=SLOW>1?'Slow-motion ×10. Real time is 10× faster.':'Real speed.';
  function pose(name){return POSE[name]}
  function buildRoute(P){
@@ -164,6 +164,8 @@ function show(c,profileBox,infoEl,accentOf){
  }
  let curPose=pose('REST');
  function frame(now){
+  if(!profileBox.isConnected)return;
+  if(sl!==SLOW){sl=SLOW;segs=plan();t0=now;sb.setAttribute('aria-pressed',SLOW>1);sb.textContent=SLOW>1?'🐢 Slow-motion ×10':'⚡ Real speed';E.note.textContent=SLOW>1?'Slow-motion ×10. Real time is 10× faster.':'Real speed.'}
   let t=now-t0;const tot=segs.reduce((a,s)=>a+s.dur,0);if(t>=tot){t0=now;t=0;mode=null}
   let acc2=0,idx=0;for(;idx<segs.length;idx++){if(t<acc2+segs[idx].dur)break;acc2+=segs[idx].dur}
   const sg=segs[Math.min(idx,segs.length-1)],f=(t-acc2)/sg.dur,from=idx===0?pose('REST'):pose(segs[idx-1].pose),to=pose(sg.pose);
@@ -174,9 +176,9 @@ function show(c,profileBox,infoEl,accentOf){
  }
  if(REDUCE){const P=pose(ph[0][2]);buildRoute(P);paint(P,{k:'ph',c:ph[0][3],air:null},performance.now());E.ph.style.opacity=0}
  else raf=requestAnimationFrame(frame);
- profileBox.querySelector('#replay').onclick=()=>{say(c.word);t0=performance.now();mode=null;if(REDUCE){const P=pose(ph[0][2]);paint(P,{k:'ph',c:ph[0][3],air:'hiss'},performance.now())}};
- const sb=profileBox.querySelector('#slow');sb.onclick=()=>{SLOW=SLOW>1?1:10;sb.setAttribute('aria-pressed',SLOW>1);sb.textContent=SLOW>1?'🐢 Slow-motion ×10':'⚡ Real speed';segs=plan();E.note.textContent=SLOW>1?'Slow-motion ×10. Real time is 10× faster.':'Real speed.';t0=performance.now()};
- info(c,d,infoEl,accentOf);
+ profileBox.querySelector('#aReplay').onclick=()=>{say(c.word);t0=performance.now();mode=null;if(REDUCE){const P=pose(ph[0][2]);paint(P,{k:'ph',c:ph[0][3],air:'hiss'},performance.now())}};
+ const sb=profileBox.querySelector('#aSlow');sb.onclick=()=>{SLOW=SLOW>1?1:10};
+ if(infoEl)info(c,d,infoEl,accentOf);
 }
 /* ===== 6. INFO PANEL ===== */
 function info(c,d,infoEl,accentOf){
