@@ -136,10 +136,11 @@
   .game .feedback.ok{ color:var(--moss); } .game .feedback.no{ color:var(--clay); }
 
   footer.foot{ margin-top:34px; text-align:center; font-size:11px; color:var(--parchment-faint); font-family:var(--font-mono); }
-  .nospeech{ display:none; margin-top:10px; font-size:11.5px; color:var(--clay); }
   @media (prefers-reduced-motion:reduce){ .glow,.burst,.hissline,.nasaldot,.glidedot,.airin,.buzz.voiced .buzzbar{ animation:none!important; } }
 </style>
 <link rel="stylesheet" href="articulation.css">
+<link rel="stylesheet" href="forge-core.css">
+<script src="forge-core.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -162,6 +163,7 @@
       <div class="seg" id="speedSeg"><button data-s="normal" aria-pressed="true">Normal</button><button data-s="slow" aria-pressed="false">🐢 Slow</button></div>
     </div>
     <button class="gamebtn" id="gameBtn">🎮 Read the Mouth</button>
+    <a class="gamebtn" href="arcade.html" style="margin-left:8px;text-decoration:none;min-height:48px">Mic Arcade</a>
     <a class="gamebtn" href="zones.html" style="margin-left:8px;text-decoration:none">⚔️ Battle Zones &amp; Games</a>
   </div>
 
@@ -196,8 +198,6 @@
     <button class="next" id="gNext">Next →</button>
   </div>
 
-  <div class="nospeech" id="nospeech">Your device can't speak here, but everything else works. Try Chrome or Safari for audio.</div>
-
   <footer class="foot">The Sound Forge · part of Renji Resources · audio uses your device's own voice</footer>
 </div>
 
@@ -206,7 +206,7 @@
 const synth=window.speechSynthesis;
 let voices=[], vUS=null, vUK=null, accent='US', speed='normal';
 function loadVoices(){ if(!synth) return; voices=synth.getVoices()||[]; vUS=voices.find(v=>/en[-_]US/i.test(v.lang))||voices.find(v=>/^en/i.test(v.lang))||null; vUK=voices.find(v=>/en[-_]GB/i.test(v.lang))||voices.find(v=>/^en/i.test(v.lang))||null; }
-if(synth){ loadVoices(); synth.onvoiceschanged=loadVoices; } else { document.getElementById('nospeech').style.display='block'; }
+if(synth){ loadVoices(); synth.onvoiceschanged=loadVoices; } 
 function say(word){ if(!synth||!word) return; synth.cancel(); const u=new SpeechSynthesisUtterance(word); const v=accent==='UK'?vUK:vUS; if(v){u.voice=v;u.lang=v.lang;} else u.lang=accent==='UK'?'en-GB':'en-US'; u.rate=speed==='slow'?0.55:0.85; synth.speak(u); }
 
 /* ===================== sound fx ===================== */

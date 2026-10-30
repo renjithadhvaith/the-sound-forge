@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Arcade · The Sound Forge</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="forge-core.css">
+<script src="forge-core.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100vh;font:500 17px/1.55 'Manrope','Hiragino Sans','Yu Gothic','Noto Sans JP',system-ui,sans-serif;
+  background-color:var(--f-bg);background-image:var(--f-paper,none),var(--f-bg-img);background-size:var(--f-paper-size,auto),auto;color:var(--f-ink);
+  -webkit-tap-highlight-color:transparent;padding-bottom:env(safe-area-inset-bottom,0px)}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
+:focus-visible{outline:3px solid var(--f-a);outline-offset:3px;border-radius:10px}
+.wrap{max-width:980px;margin:0 auto;padding:calc(18px + env(safe-area-inset-top,0px)) 16px 60px}
+.hd{padding-right:72px;margin-bottom:14px}
+.back{display:inline-flex;align-items:center;min-height:48px;color:var(--f-dim);text-decoration:none;font-weight:700}
+h1{margin:0;font:700 clamp(26px,5vw,38px)/1.1 'Fraunces',Georgia,serif}
+h1 em{font-weight:600;color:var(--f-a);text-shadow:var(--f-glow)}
+.tabs{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.tabs button{flex:1 1 220px;min-height:60px;border-radius:16px;font-weight:800;background:var(--f-surface);border:2px solid var(--f-line)}
+.tabs button[aria-selected=true]{border-color:var(--f-a);background:var(--f-surface2);box-shadow:var(--f-glow)}
+.game[hidden]{display:none}
+.how{margin:0 0 10px;color:var(--f-dim)}.how b{color:var(--f-ink)}.how span{display:block;font-size:15px;color:var(--f-faint)}
+.chips{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.chip{min-width:92px;min-height:60px;padding:6px 16px;border-radius:14px;background:var(--f-surface);border:2px solid var(--f-line);font-weight:800;line-height:1.15}
+.chip small{display:block;font-weight:500;color:var(--f-faint)}
+.chip[aria-pressed=true]{border-color:var(--f-a);background:var(--f-surface2)}
+.stage{position:relative;height:min(50vh,400px);min-height:280px;border-radius:24px;overflow:hidden;
+  background:linear-gradient(var(--f-bg2),var(--f-surface));border:2px solid var(--f-line);box-shadow:var(--f-shadow)}
+.hud{position:absolute;top:12px;left:16px;font-weight:800;color:var(--f-dim)}.hud b{color:var(--f-a);text-shadow:var(--f-glow)}
+.breeze{display:block;width:100%;height:auto;margin-top:12px;border-radius:18px;border:2px solid var(--f-line);background:var(--f-surface)}
+.msg{min-height:3.2em;margin:12px 2px;font-weight:700}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{min-height:60px;padding:0 22px;border-radius:16px;font-weight:800;background:var(--f-surface);border:2px solid var(--f-line)}
+.btn.big{background:var(--f-a);color:var(--f-bg);border-color:var(--f-a);box-shadow:var(--f-glow)}
+.sens{display:flex;align-items:center;gap:10px;color:var(--f-dim);font-weight:700}.sens input{width:160px;height:44px}
+.meters{display:flex;gap:10px;margin-bottom:6px}.meters label{flex:1;font-size:14px;font-weight:800;color:var(--f-dim)}
+.meters i{display:block;height:14px;margin-top:4px;border-radius:8px;background:var(--f-surface2);border:1px solid var(--f-line);overflow:hidden}
+.meters i::after{content:"";display:block;height:100%;width:var(--v,0%);background:var(--f-a);transition:width .08s}
+.meters label:nth-child(2) i::after{background:var(--f-b)}
+/* cannon */
+#cannon{position:absolute;left:3%;bottom:4px;width:min(34%,230px)}
+.balloon{position:absolute;width:92px;height:116px;animation:bob 2.4s ease-in-out infinite alternate}
+.balloon svg{width:100%;height:100%}
+.balloon b{position:absolute;inset:0 0 28px;display:grid;place-items:center;color:#2a1a10;font-size:20px}
+@keyframes bob{to{transform:translateY(-14px) rotate(3deg)}}
+.kick{animation:kick .25s ease-out}@keyframes kick{40%{transform:translateX(-12px)}}
+.fizz{animation:fizz .45s}@keyframes fizz{20%,60%{transform:translateX(-4px) rotate(-2deg)}40%,80%{transform:translateX(4px) rotate(2deg)}}
+.ball,.proj,.shard,.smoke{position:absolute;left:0;top:0;pointer-events:none}
+.ball{width:22px;height:22px;border-radius:50%;background:var(--f-ink);box-shadow:var(--f-glow)}
+.shard{width:10px;height:10px;border-radius:50%;background:var(--f-a)}
+.smoke{width:26px;height:26px;border-radius:50%;background:var(--f-faint);opacity:.6}
+/* ninja */
+.char{position:absolute;left:5%;bottom:6px;width:min(24%,150px);overflow:visible}
+.char *{stroke:var(--f-faint);stroke-width:1.2}
+#oni{position:absolute;right:7%;bottom:12px;width:min(28%,190px);transition:transform .2s}
+#oni.hit{animation:hit .5s}@keyframes hit{25%{transform:translateX(10px) scale(1.05);filter:brightness(2)}60%{transform:translateX(-8px) rotate(-6deg)}}
+.proj{width:44px;height:44px;color:var(--f-a);filter:drop-shadow(0 0 6px var(--f-breeze))}
+.proj svg{width:100%;height:100%}
+@media (prefers-reduced-motion:reduce){.balloon{animation:none}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header class="hd">
+    <a class="back" href="./">← Consonant chart</a>
+    <h1>The Sound Forge <em>Arcade</em></h1>
+  </header>
+
+  <div class="tabs" role="tablist" aria-label="Games">
+    <button role="tab" id="tabC" aria-selected="true" aria-controls="cannonPanel" data-g="cannon">Aspiration Cannon</button>
+    <button role="tab" id="tabN" aria-selected="false" aria-controls="ninjaPanel" data-g="ninja">Frequency Ninja</button>
+  </div>
+
+  <!-- ===== Game A: Aspiration Cannon ===== -->
+  <section class="game" id="cannonPanel" role="tabpanel" aria-labelledby="tabC">
+    <p class="how">Say <b>“pie, pie, pie”</b> into the mic. A real /p/ <b>puffs air</b> and pops the balloon. A /b/ has no puff, so the cannon fizzles.
+      <span lang="ja">パッと息を出そう！ 「パイ」ではなく、息の爆発です。</span></p>
+    <div class="chips" id="cTargets"></div>
+    <div class="stage" id="cStage">
+      <div class="hud">Popped <b id="cScore">0</b></div>
+      <svg id="cannon" viewBox="0 0 160 100" aria-hidden="true">
+        <g transform="rotate(-22 50 62)"><g id="cBarrel">
+          <rect x="40" y="50" width="86" height="24" rx="8" fill="var(--f-b)"/>
+          <rect x="118" y="46" width="14" height="32" rx="5" fill="var(--f-ink)" opacity=".85"/>
+          <circle id="cMuzzle" cx="132" cy="62" r="2" fill="none"/></g></g>
+        <circle cx="50" cy="76" r="22" fill="var(--f-a)" stroke="var(--f-ink)" stroke-width="3"/>
+        <circle cx="50" cy="76" r="6" fill="var(--f-ink)"/>
+      </svg>
+    </div>
+    <canvas class="breeze" id="cBreeze"></canvas>
+    <p class="msg" id="cMsg" aria-live="polite">Press “Start microphone”, then say “pie, pie, pie”.</p>
+    <div class="row">
+      <button class="btn big" id="cStart">Start microphone</button>
+      <button class="btn" id="cFire">Tap to fire (no mic)</button>
+      <label class="sens">Sensitivity <input id="cSens" type="range" min="0" max="1" step=".05" value=".5"></label>
+    </div>
+  </section>
+
+  <!-- ===== Game B: Frequency Ninja ===== -->
+  <section class="game" id="ninjaPanel" role="tabpanel" aria-labelledby="tabN" hidden>
+    <p class="how">Hiss <b>“ssss”</b> to throw a <b>shuriken</b>. Buzz <b>“zzzz”</b> to throw a <b>hammer</b>. Pick the sound the oni is weak to.
+      <span lang="ja">「スー」は手裏剣、「ズー」はハンマー。のどに手を当てて、ブルブルを感じよう。</span></p>
+    <div class="chips" id="nTargets"></div>
+    <div class="stage" id="nStage">
+      <div class="hud">Defeated <b id="nScore">0</b></div>
+      <svg class="char" viewBox="0 0 100 130" aria-hidden="true">
+        <path d="M50 62c-22 0-34 18-34 44v20h68v-20c0-26-12-44-34-44Z" fill="#1d1d2b"/>
+        <circle cx="50" cy="40" r="26" fill="#1d1d2b"/>
+        <rect x="26" y="30" width="48" height="16" rx="8" fill="#f1d7b5"/>
+        <circle cx="40" cy="38" r="3.2" fill="#1d1d2b"/><circle cx="60" cy="38" r="3.2" fill="#1d1d2b"/>
+        <path d="M24 22h52v9H24z" fill="var(--f-a)"/><path d="M76 26l18 6-14 7z" fill="var(--f-a)"/>
+        <path d="M66 72 86 82" stroke="#1d1d2b" stroke-width="9" stroke-linecap="round"/>
+        <circle id="nHand" cx="86" cy="82" r="3" fill="none"/>
+      </svg>
+      <svg id="oni" viewBox="0 0 120 120" aria-hidden="true">
+        <path d="M30 34 38 8 52 30ZM90 34 82 8 68 30Z" fill="#f5e6c8"/>
+        <circle cx="60" cy="68" r="44" fill="var(--f-a)"/>
+        <path d="M34 56l20 8M86 56 66 64" stroke="#1d1d2b" stroke-width="6" stroke-linecap="round"/>
+        <circle cx="46" cy="68" r="6" fill="#fff"/><circle cx="74" cy="68" r="6" fill="#fff"/>
+        <circle cx="46" cy="68" r="2.5" fill="#1d1d2b"/><circle cx="74" cy="68" r="2.5" fill="#1d1d2b"/>
+        <path d="M38 92q22 12 44 0Z" fill="#1d1d2b"/><path d="M48 93l4 9 4-9M64 93l4 9 4-9" fill="#fff"/>
+      </svg>
+    </div>
+    <canvas class="breeze" id="nBreeze"></canvas>
+    <div class="meters"><label>Hiss (high)<i id="nHiss"></i></label><label>Buzz (low)<i id="nBuzz"></i></label></div>
+    <p class="msg" id="nMsg" aria-live="polite">Press “Start microphone”, then hiss or buzz.</p>
+    <div class="row">
+      <button class="btn big" id="nStart">Start microphone</button>
+      <button class="btn" id="nShur">Throw shuriken (no mic)</button>
+      <button class="btn" id="nHam">Throw hammer (no mic)</button>
+    </div>
+  </section>
+</main>
+<script src="breeze.js"></script>
+<script src="games.js"></script>
+</body>
+</html>

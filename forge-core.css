@@ -1,0 +1,72 @@
+/* The Sound Forge · forge-core.css
+   Universal skins (data-theme on <html>), "Tap to Awaken" overlay, skin toggle.
+   Every colour in the new modules comes from the --f-* tokens below. */
+
+html[data-theme=day]{
+  --f-bg:#f6efdf;--f-bg2:#eadfc3;--f-surface:#fffaf0;--f-surface2:#f7edd8;
+  --f-ink:#2a2013;--f-dim:#5b4d36;--f-faint:#7d6e52;--f-line:#d3c196;
+  --f-a:#c4571f;--f-b:#23706a;--f-breeze:#f2b705;
+  --f-glow:0 0 0 #0000;--f-shadow:0 10px 24px -16px #5b4d36aa;
+  --f-bg-img:linear-gradient(180deg,#f8f2e3,#eadfc3);
+  --f-paper:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .28 0 0 0 0 .15 0 0 0 .1 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  --f-paper-size:160px;color-scheme:light}
+
+html[data-theme=night]{
+  --f-bg:#050816;--f-bg2:#0b1433;--f-surface:#0d1630;--f-surface2:#121d40;
+  --f-ink:#eaf1ff;--f-dim:#a9b8dc;--f-faint:#7183ad;--f-line:#26356b;
+  --f-a:#ffe74a;--f-b:#4fe3ff;--f-breeze:#ffe94d;
+  --f-glow:0 0 10px #ffe94dcc,0 0 26px #ffe94d66;--f-shadow:0 12px 30px -16px #000;
+  --f-bg-img:radial-gradient(120% 90% at 50% -10%,#14235a,#050816 60%);
+  --f-paper:none;--f-paper-size:auto;color-scheme:dark}
+
+html[data-theme=yokai]{
+  --f-bg:#15122e;--f-bg2:#2b1741;--f-surface:#211a44;--f-surface2:#2a2158;
+  --f-ink:#f8eed6;--f-dim:#c9bde4;--f-faint:#9a8cc0;--f-line:#5a4aa8;
+  --f-a:#ff5a3c;--f-b:#2de2e6;--f-breeze:#ffd23f;
+  --f-glow:0 0 8px #ffd23fbb;--f-shadow:0 12px 28px -16px #000;
+  --f-bg-img:linear-gradient(165deg,#15122e,#2b1741 58%,#0c2f3a);
+  /* seigaiha-style wave scales */
+  --f-paper:radial-gradient(circle at 50% 100%,#0000 0 34%,#ffffff12 35% 38%,#0000 39% 55%,#ffffff12 56% 59%,#0000 60%);
+  --f-paper-size:56px 28px;color-scheme:dark}
+
+/* Bridge: remap the chart page's older variables onto the skin tokens */
+html[data-theme]{
+  --soil-900:var(--f-bg);--soil-800:var(--f-surface);--dusk-900:var(--f-bg2);--dusk-800:var(--f-bg2);
+  --parchment:var(--f-ink);--parchment-dim:var(--f-dim);--parchment-faint:var(--f-faint);
+  --panel:var(--f-surface);--panel-2:var(--f-surface2);--border:var(--f-line);--border-soft:var(--f-line);
+  --moss:var(--f-b);--moss-deep:var(--f-b);--root-blue:var(--f-b);--bud-amber:var(--f-a);--clay:var(--f-a);--berry:var(--f-a)}
+html[data-theme] body{
+  background-color:var(--f-bg);
+  background-image:var(--f-paper,none),var(--f-bg-img);
+  background-size:var(--f-paper-size,auto),auto;
+  color:var(--f-ink);transition:background-color .4s,color .4s}
+html[data-theme] :is(.mrow,.cchip,.seg,.tl,.ctl .btn,.cfbtn){background:var(--f-surface2)}
+html[data-theme] header.top{padding-right:72px}
+html[data-theme=night] :is(.cchip .ipa,.sym){text-shadow:var(--f-glow)}
+
+/* ---------- Skin toggle (large tap target) ---------- */
+.forge-skin{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));right:12px;z-index:60;font-family:inherit}
+.forge-skin>button{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;cursor:pointer;
+  background:var(--f-surface);color:var(--f-ink);border:2px solid var(--f-line);box-shadow:var(--f-shadow),var(--f-glow)}
+.forge-tray{position:absolute;top:64px;right:0;display:none;flex-direction:column;gap:6px;padding:10px;min-width:210px;
+  background:var(--f-surface);border:2px solid var(--f-line);border-radius:18px;box-shadow:var(--f-shadow)}
+.forge-skin.open .forge-tray{display:flex}
+.forge-tray button{min-height:56px;padding:0 14px;border-radius:12px;display:flex;align-items:center;gap:12px;cursor:pointer;
+  font:700 15px/1 inherit;color:var(--f-ink);background:none;border:2px solid transparent;text-align:left}
+.forge-tray button small{margin-left:auto;color:var(--f-faint);font-weight:500}
+.forge-tray button[aria-pressed=true]{border-color:var(--f-a);background:var(--f-surface2)}
+.forge-sw{width:24px;height:24px;border-radius:50%;border:2px solid var(--f-line);flex:none}
+
+/* ---------- Tap to Awaken ---------- */
+#awaken{position:fixed;inset:0;z-index:100;width:100%;display:grid;place-content:center;justify-items:center;gap:18px;
+  padding:24px;text-align:center;cursor:pointer;border:0;color:var(--f-ink);font-family:inherit;
+  background:radial-gradient(circle at 50% 40%,var(--f-bg2),var(--f-bg));
+  transition:opacity .6s ease,transform .6s ease}
+#awaken.go{opacity:0;transform:scale(1.12);pointer-events:none}
+#awaken .orb{width:132px;height:132px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#fff9,#0000 42%),var(--f-breeze);
+  box-shadow:0 0 0 0 var(--f-breeze),var(--f-glow);animation:forge-orb 2.2s ease-out infinite}
+#awaken strong{font:700 clamp(24px,5vw,36px)/1.15 var(--font-display,Georgia,serif)}
+#awaken span:last-child{color:var(--f-dim);font-size:16px}
+@keyframes forge-orb{to{box-shadow:0 0 0 64px #0000,var(--f-glow)}}
+@media (prefers-reduced-motion:reduce){#awaken .orb{animation:none}#awaken,#awaken.go{transition:none}}
